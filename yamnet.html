@@ -77,7 +77,7 @@ displaylabel.innerHTML = 'Hello'
 
 
 async function init() {
-  const modelUrl = '/model.json';
+  const modelUrl = 'https://mattpang.github.io/site/yamnet/model.json';
   const mymodel = await tf.loadGraphModel(modelUrl, { fromTFHub: false });
   window.mymodel = mymodel;
   const waveform = tf.zeros([15000 * 3]);
