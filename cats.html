@@ -1,0 +1,63 @@
+<html>
+<head>
+
+<!-- Load TensorFlow.js. This is required to use MobileNet. -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
+<!-- Load the MobileNet model. -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
+    </head>
+<body>
+
+<!-- Replace this with your image. Make sure CORS settings allow reading the image! -->
+<video id="video" autoplay muted playsinline></video>
+<canvas id='canvas' width="500" height="500" style="display:none"></canvas>
+<p id="prediction">Thinking....</p>
+<p id="scores">Thinking....</p>
+
+<!-- Place your code in the script tag below. You can also use an external .js file -->
+<script>
+
+  // Notice there is no 'import' statement. 'mobilenet' and 'tf' is
+  // available on the index-page because of the script tag above.
+
+  function makestatment(prediction){
+        document.getElementById('prediction').innerHTML  = 'Have not seen a cat yet.';
+        for (m in prediction) {
+        console.log(prediction[m]);
+        if ((prediction[m]['className'].includes("cat")) && (prediction[m]['probability'] > 0.1)) {
+        document.getElementById('prediction').innerHTML  = 'There probably is a cat in here.';
+       }
+    }
+  }
+
+
+  (async () => {
+  const model = await mobilenet.load()
+
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+
+  const stream = await navigator.mediaDevices.getUserMedia({audio:false, video:{facingMode:'environment'}})
+
+    // stream webcam
+    video.srcObject=stream
+    predict()
+
+  async function predict() {
+    context.drawImage(video,0,0,800,450)
+    const predictions = await model.classify(canvas)
+    makestatment(predictions);
+    document.getElementById('scores').innerHTML  = 'Predictions: '+JSON.stringify(predictions);
+
+    requestAnimationFrame(predict)
+  }
+
+  })()
+
+
+
+</script>
+</body>
+</html>
